@@ -1,8 +1,8 @@
-int DANGER = 0;
+int DANGER = 2;
 int WARNING = 1;
-int NORMAL = 2;
-int CO[3] = {12,11,10}; //DANGER,WARNING,NORMAL
-int PM25[3] = {9,8,7}; //DANGER,WARNING,NORMAL
+int NORMAL = 0;
+int CO[3] = {12,11,10}; //NORMAL,WARNING,DANGER
+int PM25[3] = {9,8,7}; //NORMAL,WARNING,DANGER
 int BAT = 6;
 int LimPM25[3] = {25,10}; // ug/m^3 https://www.who.int/es/news-room/fact-sheets/detail/ambient-(outdoor)-air-quality-and-health
 int LimCO[3] = {200,100}; // ppm http://www.aire.cdmx.gob.mx/default.php?opc=%27ZaBhnmI=&dc=%27Zw==
