@@ -1,53 +1,45 @@
-int measurePin = 0;
+int measurePin = A0;
 int ledPower = 12;
 
-int samplingTime = 280;
-int deltaTime = 40;
-int sleepTime = 9680;
+unsigned int samplingTime = 280;
+unsigned int deltaTime = 40;
+unsigned int sleepTime = 9680;
 
 float voMeasured = 0;
 float calcVoltage = 0;
 float dustDensity = 0;
-float pm25=0;
 
 void setup(){
   Serial.begin(9600);
   pinMode(ledPower,OUTPUT);
 }
 
-
 void loop(){
-  digitalWrite(ledPower,HIGH); // power on the LED
+  digitalWrite(ledPower,HIGH);
   delayMicroseconds(samplingTime);
 
-  voMeasured = analogRead(measurePin); // read the dust value
+  voMeasured = analogRead(measurePin);
 
   delayMicroseconds(deltaTime);
-  digitalWrite(ledPower,LOW); // turn the LED off
+  digitalWrite(ledPower,LOW);
   delayMicroseconds(sleepTime);
 
-  // 0 - 3.3V mapped to 0 - 1023 integer values
-  // recover voltage
-  calcVoltage = 5*voMeasured/1024;
+  calcVoltage = voMeasured*(5.0/1024);
+  dustDensity = 0.17*calcVoltage-0.1;
 
+  if ( dustDensity < 0)
+  {
+    dustDensity = 0.00;
+  }
 
-  // linear eqaution taken from http://www.howmuchsnow.com/arduino/airquality/
-  // Chris Nafis (c) 2012
-  dustDensity = 0.17 * calcVoltage - 0.1;
+  Serial.println("Raw Signal Value (0-1023):");
+  Serial.println(voMeasured);
 
-  // Ecuacion linear de PM 2.5
-  pm25=(calcVoltage-0.0356)*120000;
+  Serial.println("Voltage:");
+  Serial.println(calcVoltage);
 
-  Serial.print("Raw Signal Value (0-1023): ");
-  Serial.print(voMeasured);
-
-  Serial.print(" - Voltage: ");
-  Serial.print(calcVoltage);
-
-  Serial.print(" - Dust Density(mg/m3): ");
+  Serial.println("Dust Density:");
   Serial.println(dustDensity);
 
-  Serial.print(" - PM 0.5(particulas/0.01 pie3): ");
-  Serial.println(pm05);
   delay(1000);
 }
