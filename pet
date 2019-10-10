@@ -1,0 +1,4 @@
+GET /medicion/7/9 HTTP/1.1
+Host: 10.42.0.33
+
+

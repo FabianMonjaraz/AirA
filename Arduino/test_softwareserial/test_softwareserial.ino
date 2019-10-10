@@ -24,7 +24,7 @@ void initConnection(){
     sendCommand("AT+RST");
     sendCommand("ATE0");
     sendCommand("AT+GMR");
-    sendCommand("AT+CWJAP_CUR=\"Bastion\",\"#4rt0r14s#\"");
+    sendCommand("AT+CWJAP_CUR=\"ADIP-DFMF\",\"bhuq0e3z\"");
     delay(1000);
 }
 void setup() 
