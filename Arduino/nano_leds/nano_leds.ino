@@ -1,14 +1,26 @@
+//Leds
 int DANGER = 2;
 int WARNING = 1;
 int NORMAL = 0;
-int CO[3] = {8,9,10}; //NORMAL,WARNING,DANGER
-int PM25[3] = {4,5,6}; //NORMAL,WARNING,DANGER
+int PM25[3] = {8,9,10}; //NORMAL,WARNING,DANGER
+int CO[3] = {4,5,6}; //NORMAL,WARNING,DANGER
 int LimPM25[3] = {25,10}; // ug/m^3 https://www.who.int/es/news-room/fact-sheets/detail/ambient-(outdoor)-air-quality-and-health
 int LimCO[3] = {200,100}; // ppm http://www.aire.cdmx.gob.mx/default.php?opc=%27ZaBhnmI=&dc=%27Zw==
+float LvlCO = 0.0;
+float LvlPM25 = 0.0;
 
-float LvlCO = 204.0;
-float LvlPM25 = 9.0;
+//Wifi
+String resource = "/medicion/";
+String request= "";
+String host = "10.42.0.33";
+int sizeRequest = 0;
+String cmd = "";
 
+//Serial Comm.
+String buffer  = "";
+boolean dataRcvd = false;
+
+//Battery Checker
 int BAT = 7;
 int stateBat = 0;
 float dischargedBat = 3.2;
@@ -99,10 +111,41 @@ void setup(){
     pinMode(PM25[WARNING], OUTPUT);
     pinMode(PM25[NORMAL], OUTPUT);
     pinMode(BAT, OUTPUT);
+    Serial.begin(9600);
+    buffer.reserve(12);
 }
 
 void loop(){
     measure();
     batteryCheck();
-    delay(1000);
+    if(dataRcvd == true){
+        LvlCO = atof(buffer.substring(0,buffer.indexOf("/")).c_str()); 
+        LvlPM25 = atof(buffer.substring(buffer.indexOf("/")+1).c_str()); 
+        resource += buffer;
+        request = "GET " + resource + " HTTP/1.1\r\nHost: " + host + "\r\n\r\n";
+
+        sizeRequest = request.length();
+        cmd = "AT+CIPSEND=";
+        cmd.concat(sizeRequest);
+
+        Serial.println(cmd);
+        Serial.println(request);
+        Serial.print("CO: ");
+        Serial.print(LvlCO);
+        Serial.print("; PM2.5: ");
+        Serial.println(LvlPM25);
+        Serial.println();
+
+        dataRcvd = false;
+        resource = "/medicion/";
+        buffer = "";
+    }
+    delay(500);
+}
+
+void serialEvent(){
+    //If message ends with or without an enter
+    //buffer = Serial.readStringUntil('\n');
+    buffer = Serial.readString();
+    dataRcvd = true;
 }
